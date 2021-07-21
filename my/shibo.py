@@ -2,26 +2,21 @@ import csv
 import datetime
 import re
 
-outputPath = "./output/shft.csv"
-
-with open(outputPath, 'w') as f:
-    writer = csv.writer(f)
-    writer.writerow(
-        ["Subject", "Start Date", "Start Time", "End Date", "End Time"])
-
-inputPath = "./data/shift.txt"
-with open(inputPath, 'r') as f:
-    dataString = f.read()
-
-
 class Formatter:
     def __init__(self, dataString):
+        '''Formatterのコンストラクタ
+
+        Parameters
+        ----------
+        dataString : String
+            シフトボードから出力された無加工の文字列データ
+        '''
         self.dataDicts = []
         dataArray = dataString.splitlines()
-        self.parseData([dataArray[0],dataArray[1]])
-        self.dataDicts.append(self.parseData([dataArray[0],dataArray[1]]))
-    
-    def checkData(self,dataString):
+        self.parseData([dataArray[0], dataArray[1]])
+        self.dataDicts.append(self.parseData([dataArray[0], dataArray[1]]))
+
+    def checkData(self, dataString):
         '''それがシフトボードから出力されたデータなのかを正規表現を用いてチェックする
 
         Parameters
@@ -46,8 +41,9 @@ class Formatter:
         NO_DATA = 3
         END_LINE = 4
         stateData = NOT_SHIFT_DATA
-        
-        timeRe = re.compile("\d{2}/\d{2}（(月|火|水|木|金|土|日)）\d{2}:\d{2}\s-\s\d{2}:\d{2}")
+
+        timeRe = re.compile(
+            "\d{2}/\d{2}（(月|火|水|木|金|土|日)）\d{2}:\d{2}\s-\s\d{2}:\d{2}")
         subRe = re.compile("-\s.+")
 
         if timeRe.fullmatch(dataString) is not None:
@@ -60,9 +56,6 @@ class Formatter:
             stateData = END_LINE
 
         return stateData
-
-        
-
 
     def parseData(self, dataStrings):
         '''データを一回分もらい、辞書形式に直して渡す
@@ -79,13 +72,15 @@ class Formatter:
             バイト先の名前、始まりの時間、終わりの時間
         '''
         dataDict = {}
-        dataDict["startDate"] = self.setDate(dataStrings[0][0:2],dataStrings[0][3:5],dataStrings[0][8:10],dataStrings[0][11:13])
-        dataDict["endDate"] = self.setDate(dataStrings[0][0:2],dataStrings[0][3:5],dataStrings[0][16:18],dataStrings[0][19:21])
+        dataDict["startDate"] = self.setDate(
+            dataStrings[0][0:2], dataStrings[0][3:5], dataStrings[0][8:10], dataStrings[0][11:13])
+        dataDict["endDate"] = self.setDate(
+            dataStrings[0][0:2], dataStrings[0][3:5], dataStrings[0][16:18], dataStrings[0][19:21])
         dataDict["subject"] = dataStrings[1][2:]
         return dataDict
-    
+
     @staticmethod
-    def setDate(month,day,hour,minite):
+    def setDate(month, day, hour, minite):
         '''
         日付を入れると今日以降の年を推定する
 
@@ -99,7 +94,7 @@ class Formatter:
             hh形式の時間
         minite : str
             mm形式の分
-        
+
         Returns
         ------------
         date : datetime
@@ -114,9 +109,5 @@ class Formatter:
         day = int(day)
         if(month < today.month):
             year += 1
-        date = datetime.datetime(year,month,day,hour,minite)
+        date = datetime.datetime(year, month, day, hour, minite)
         return date
-
-
-
-c = Formatter(dataString)

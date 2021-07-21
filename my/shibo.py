@@ -129,7 +129,7 @@ class ShiftContainer:
         '''Googleカレンダー手動形式のフォーマットに出力
         参考 : https://support.google.com/a/users/answer/37118?hl=ja&co=GENIE.Platform%3DDesktop#zippy=%2Ccsv-%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E3%81%AE%E4%BD%9C%E6%88%90%E3%81%A8%E7%B7%A8%E9%9B%86
         '''
-        outputPath = "./output/shft.csv"
+        outputPath = "./output/forGoogle.csv"
         with open(outputPath, 'w') as f:
             writer = csv.writer(f)
             writer.writerow(

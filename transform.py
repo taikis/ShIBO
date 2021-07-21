@@ -17,7 +17,29 @@ class formatter:
     def __init__(self, dataString):
         self.dataDicts = []
         dataArray = dataString.splitlines()
-        
+        self.parseData([dataArray[0],dataArray[1]])
+        self.dataDicts.append(self.parseData([dataArray[0],dataArray[1]]))
+
+    def parseData(self, dataString):
+        '''データを一回分もらい、辞書形式に直して渡す
+
+        Parameters
+        ----------
+        dataString : String
+            一回分のデータ
+            最初の列に日付、次の列にバイト先の名前が入っている
+
+        Returns
+        -------
+        dict[str,datetime,datetime]
+            バイト先の名前、始まりの時間、終わりの時間
+        '''
+        dataDict = {}
+        dataDict["startDate"] = self.setDate(dataString[0][0:2],dataString[0][3:5],dataString[0][8:10],dataString[0][11:13])
+        dataDict["endDate"] = self.setDate(dataString[0][0:2],dataString[0][3:5],dataString[0][16:18],dataString[0][19:21])
+        dataDict["subject"] = dataString[1][2:]
+        return dataDict
+    
     @staticmethod
     def setDate(month,day,hour,minite):
         '''

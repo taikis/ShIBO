@@ -2,7 +2,7 @@ import csv
 import datetime
 import re
 
-class Formatter:
+class ShiftContainer:
     def __init__(self, dataString):
         '''Formatterのコンストラクタ
 

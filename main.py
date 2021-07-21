@@ -13,4 +13,4 @@ with open(inputPath, 'r') as f:
     dataString = f.read()
 
 
-c = shibo.Formatter(dataString)
+c = shibo.ShiftContainer(dataString)

@@ -124,7 +124,22 @@ class ShiftContainer:
                 self.dataDicts.append(parseData([dataArray[i+1]]))
             elif checkData(dataArray[i+1]) == 3:
                 self.dataDicts.append(parseData([dataArray[i]]))
-        
-        pprint.pprint(self.dataDicts)
 
-
+    def toGoogleCSV(self):
+        '''Googleカレンダー手動形式のフォーマットに出力
+        参考 : https://support.google.com/a/users/answer/37118?hl=ja&co=GENIE.Platform%3DDesktop#zippy=%2Ccsv-%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E3%81%AE%E4%BD%9C%E6%88%90%E3%81%A8%E7%B7%A8%E9%9B%86
+        '''
+        outputPath = "./output/shft.csv"
+        with open(outputPath, 'w') as f:
+            writer = csv.writer(f)
+            writer.writerow(
+                ["Subject", "Start Date", "Start Time", "End Date", "End Time"])
+            for data in self.dataDicts:
+                writer.writerow(
+                [data["subject"],
+                data["startDate"].strftime("%m/%d/%Y"),
+                data["startDate"].strftime("%l:%M %p"),
+                data["endDate"].strftime("%m/%d/%Y"),
+                data["endDate"].strftime("%l:%M %p"),
+                ]
+                )

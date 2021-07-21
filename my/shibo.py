@@ -71,7 +71,7 @@ def parseData(dataStrings):
 
     return dataDict
 
-def setDate(month, day, hour, minite):
+def setDate(month, day, hour, minute):
     '''
     日付を入れると今日以降の年を推定する
 
@@ -95,12 +95,15 @@ def setDate(month, day, hour, minite):
     today = datetime.datetime.now()
     year = today.year
     month = int(month)
-    hour = int(hour)
-    minite = int(minite)
     day = int(day)
-    if(month < today.month):
+    if month < today.month:
         year += 1
-    date = datetime.datetime(year, month, day, hour, minite)
+    date = datetime.datetime(year, month, day)
+    hour = int(hour)
+    minute = int(minute)
+    minutes = hour*60 + minute
+    date += datetime.timedelta(minutes=minutes)    
+
     return date
 
 class ShiftContainer:

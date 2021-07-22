@@ -7,31 +7,26 @@ from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 
 # If modifying these scopes, delete the file token.json.
-SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
+SCOPES = ['https://www.googleapis.com/auth/calendar']
+CAL_NAME = 'work by ShIBO'
 
 
-def main():
-    """Shows basic usage of the Google Calendar API.
-    Prints the start and name of the next 10 events on the user's calendar.
-    """
+def cred():
     creds = None
-    # The file token.json stores the user's access and refresh tokens, and is
-    # created automatically when the authorization flow completes for the first
-    # time.
-    # token.jsonというファイルには、ユーザーのアクセストークンとリフレッシュトークンが格納されています。自動的に作成されます。
-    if os.path.exists('token.json'):
-        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+    if os.path.exists('cred/token.json'):
+        creds = Credentials.from_authorized_user_file('cred/token.json', SCOPES)
     # If there are no (valid) credentials available, let the user log in.
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
             flow = InstalledAppFlow.from_client_secrets_file(
-                'credentials.json', SCOPES)
+                'cred/credentials.json', SCOPES)
             creds = flow.run_local_server(port=0)
         # Save the credentials for the next run
-        with open('token.json', 'w') as token:
+        with open('cred/token.json', 'w') as token:
             token.write(creds.to_json())
+    return creds
 
     service = build('calendar', 'v3', credentials=creds)
 
@@ -49,6 +44,25 @@ def main():
         start = event['start'].get('dateTime', event['start'].get('date'))
         print(start, event['summary'])
 
+def searchCalendar(creds,calName):
+    service = build('calendar', 'v3', credentials=creds)
+    page_token = None
+    calendar_items = []
+    while True:
+        calendar_list = service.calendarList().list(pageToken=page_token).execute()
+        for calendar_list_entry in calendar_list['items']:
+            calendar_items.append(calendar_list_entry)
+        page_token = calendar_list.get('nextPageToken')
+        if not page_token:
+            break
+    for calendar_list_entry in calendar_items:
+        if calendar_list_entry['summary'] == CAL_NAME:
+            return calendar_list_entry['id']
+    return None
+
+def createCalendar(creds):
 
 if __name__ == '__main__':
-    main()
+    creds = cred()
+    readEvent10(creds)
+    searchCalendar(creds,"calName")

@@ -1,6 +1,7 @@
 import csv
 
 from modules import shibo
+from modules import toGoogle
 
 inputPath = "./data/shift.txt"
 with open(inputPath, 'r') as f:
@@ -9,3 +10,4 @@ with open(inputPath, 'r') as f:
 
 c = shibo.ShiftContainer(dataString)
 c.toGoogleCSV()
+toGoogle.createEvent(toGoogle.getCalenderId())

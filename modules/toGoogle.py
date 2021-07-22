@@ -10,8 +10,14 @@ from google.oauth2.credentials import Credentials
 SCOPES = ['https://www.googleapis.com/auth/calendar']
 CAL_NAME = 'work by ShIBO'
 
-
 def cred():
+    '''認証のための関数
+
+    Returns
+    -------
+    Credential
+        認証トークン
+    '''
     creds = None
     if os.path.exists('cred/token.json'):
         creds = Credentials.from_authorized_user_file('cred/token.json', SCOPES)
@@ -28,8 +34,9 @@ def cred():
             token.write(creds.to_json())
     return creds
 
-def readEvent10(creds):
-    service = build('calendar', 'v3', credentials=creds)
+service = build('calendar', 'v3', credentials=cred())
+
+def readEvent10():
 
     # Call the Calendar API
     now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
@@ -45,8 +52,7 @@ def readEvent10(creds):
         start = event['start'].get('dateTime', event['start'].get('date'))
         print(start, event['summary'])
 
-def searchCalendar(creds,calName):
-    service = build('calendar', 'v3', credentials=creds)
+def searchCalendar(calName):
     page_token = None
     calendar_items = []
     while True:
@@ -61,9 +67,8 @@ def searchCalendar(creds,calName):
             return calendar_list_entry['id']
     return None
 
-def getCalenderId(creds):
-    service = build('calendar', 'v3', credentials=creds)
-    calendar_id = searchCalendar(creds,CAL_NAME)
+def getCalenderId():
+    calendar_id = searchCalendar(CAL_NAME)
     #ない場合は作る
     if calendar_id is None:
         calendar = {
@@ -73,8 +78,7 @@ def getCalenderId(creds):
         calendar_id = service.calendars().insert(body=calendar).execute()
     return calendar_id
 
-def createEvent(calendar_id,creds):
-    service = build('calendar', 'v3', credentials=creds)
+def createEvent(calendar_id):
     event = {
     'summary': 'sample',
     'start': {
@@ -89,6 +93,5 @@ def createEvent(calendar_id,creds):
     event = service.events().insert(calendarId=calendar_id, body=event).execute()
 
 if __name__ == '__main__':
-    creds = cred()
     #readEvent10(creds)
-    createEvent(getCalenderId(creds),creds)
+    createEvent(getCalenderId())

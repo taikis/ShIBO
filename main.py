@@ -1,6 +1,6 @@
 import csv
 
-from my import shibo
+from modules import shibo
 
 inputPath = "./data/shift.txt"
 with open(inputPath, 'r') as f:

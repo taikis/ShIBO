@@ -28,6 +28,7 @@ def cred():
             token.write(creds.to_json())
     return creds
 
+def readEvent10(creds):
     service = build('calendar', 'v3', credentials=creds)
 
     # Call the Calendar API
@@ -61,6 +62,15 @@ def searchCalendar(creds,calName):
     return None
 
 def createCalendar(creds):
+    service = build('calendar', 'v3', credentials=creds)
+    calendar = {
+        'summary': CAL_NAME,
+        'timeZone': 'Asia/Tokyo'
+    }
+
+    created_calendar = service.calendars().insert(body=calendar).execute()
+
+    print(created_calendar['id'])
 
 if __name__ == '__main__':
     creds = cred()

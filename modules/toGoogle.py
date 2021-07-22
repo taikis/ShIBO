@@ -41,13 +41,15 @@ service = build('calendar', 'v3', credentials=cred())
 
 
 def readEvent10():
+    '''テストコードの残骸
+    '''
 
     # Call the Calendar API
     now = datetime.datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
     print('Getting the upcoming 10 events')
     events_result = service.events().list(calendarId='primary', timeMin=now,
-                                          maxResults=10, singleEvents=True,
-                                          orderBy='startTime').execute()
+                                        maxResults=10, singleEvents=True,
+                                        orderBy='startTime').execute()
     events = events_result.get('items', [])
 
     if not events:
@@ -58,6 +60,19 @@ def readEvent10():
 
 
 def searchCalendar(calName):
+    '''名前にあったカレンダーを探す
+
+    Parameters
+    ----------
+    calName : str
+        カレンダーの名前
+
+    Returns
+    -------
+    str
+        カレンダーのID。
+        なかった場合はNone
+    '''
     page_token = None
     calendar_items = []
     while True:
@@ -74,6 +89,14 @@ def searchCalendar(calName):
 
 
 def getCalenderId():
+    '''カレンダーのIDを取得する
+    searchCalendarを用い、なかった場合は作るので戻り値が保証される
+
+    Returns
+    -------
+    str
+        カレンダーのID
+    '''
     calendar_id = searchCalendar(CAL_NAME)
     # ない場合は作る
     if calendar_id is None:
@@ -81,13 +104,22 @@ def getCalenderId():
             'summary': CAL_NAME,
             'timeZone': 'Asia/Tokyo'
         }
-        
+
         calendar_id = service.calendars().insert(body=calendar).execute()['id']
     print(calendar_id)
     return calendar_id
 
 
 def createEvent(dicts, calendar_id):
+    '''イベントを作成する
+
+    Parameters
+    ----------
+    dicts : list[dict[str,DateTime,DateTime]]
+        イベントのリスト
+    calendar_id : str
+        カレンダーのID
+    '''
     for event_dict in dicts:
         event = {
             'summary': event_dict["subject"],
@@ -101,6 +133,10 @@ def createEvent(dicts, calendar_id):
             },
         }
         event = service.events().insert(calendarId=calendar_id, body=event).execute()
+
+
+def setEvent(dicts):
+    createEvent(dicts, getCalenderId())
 
 
 if __name__ == '__main__':

@@ -11,4 +11,4 @@ with open(inputPath, 'r') as f:
 c = shibo.ShiftContainer(dataString)
 event_dicts = c.dataDicts
 c.toGoogleCSV()
-toGoogle.createEvent(event_dicts,toGoogle.getCalenderId())
+toGoogle.setEvent(event_dicts)

@@ -57,22 +57,38 @@ def searchCalendar(creds,calName):
         if not page_token:
             break
     for calendar_list_entry in calendar_items:
-        if calendar_list_entry['summary'] == CAL_NAME:
+        if calendar_list_entry['summary'] == calName:
             return calendar_list_entry['id']
     return None
 
-def createCalendar(creds):
+def getCalenderId(creds):
     service = build('calendar', 'v3', credentials=creds)
-    calendar = {
-        'summary': CAL_NAME,
-        'timeZone': 'Asia/Tokyo'
+    calendar_id = searchCalendar(creds,CAL_NAME)
+    #ない場合は作る
+    if calendar_id is None:
+        calendar = {
+            'summary': CAL_NAME,
+            'timeZone': 'Asia/Tokyo'
+        }
+        calendar_id = service.calendars().insert(body=calendar).execute()
+    return calendar_id
+
+def createEvent(calendar_id,creds):
+    service = build('calendar', 'v3', credentials=creds)
+    event = {
+    'summary': 'sample',
+    'start': {
+        'dateTime': '2021-07-28T17:00:00+09:00',
+        'timeZone': 'Asia/Tokyo',
+    },
+    'end': {
+        'dateTime': '2021-07-28T17:00:00+09:00',
+        'timeZone': 'Asia/Tokyo',
+    },
     }
-
-    created_calendar = service.calendars().insert(body=calendar).execute()
-
-    print(created_calendar['id'])
+    event = service.events().insert(calendarId=calendar_id, body=event).execute()
 
 if __name__ == '__main__':
     creds = cred()
-    readEvent10(creds)
-    searchCalendar(creds,"calName")
+    #readEvent10(creds)
+    createEvent(getCalenderId(creds),creds)

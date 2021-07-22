@@ -10,6 +10,7 @@ from google.oauth2.credentials import Credentials
 SCOPES = ['https://www.googleapis.com/auth/calendar']
 CAL_NAME = 'work by ShIBO'
 
+
 def cred():
     '''認証のための関数
 
@@ -20,7 +21,8 @@ def cred():
     '''
     creds = None
     if os.path.exists('cred/token.json'):
-        creds = Credentials.from_authorized_user_file('cred/token.json', SCOPES)
+        creds = Credentials.from_authorized_user_file(
+            'cred/token.json', SCOPES)
     # If there are no (valid) credentials available, let the user log in.
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
@@ -34,16 +36,18 @@ def cred():
             token.write(creds.to_json())
     return creds
 
+
 service = build('calendar', 'v3', credentials=cred())
+
 
 def readEvent10():
 
     # Call the Calendar API
-    now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
+    now = datetime.datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
     print('Getting the upcoming 10 events')
     events_result = service.events().list(calendarId='primary', timeMin=now,
-                                        maxResults=10, singleEvents=True,
-                                        orderBy='startTime').execute()
+                                          maxResults=10, singleEvents=True,
+                                          orderBy='startTime').execute()
     events = events_result.get('items', [])
 
     if not events:
@@ -51,6 +55,7 @@ def readEvent10():
     for event in events:
         start = event['start'].get('dateTime', event['start'].get('date'))
         print(start, event['summary'])
+
 
 def searchCalendar(calName):
     page_token = None
@@ -67,31 +72,37 @@ def searchCalendar(calName):
             return calendar_list_entry['id']
     return None
 
+
 def getCalenderId():
     calendar_id = searchCalendar(CAL_NAME)
-    #ない場合は作る
+    # ない場合は作る
     if calendar_id is None:
         calendar = {
             'summary': CAL_NAME,
             'timeZone': 'Asia/Tokyo'
         }
-        calendar_id = service.calendars().insert(body=calendar).execute()
+        
+        calendar_id = service.calendars().insert(body=calendar).execute()['id']
+    print(calendar_id)
     return calendar_id
 
-def createEvent(calendar_id):
-    event = {
-    'summary': 'sample',
-    'start': {
-        'dateTime': '2021-07-28T17:00:00+09:00',
-        'timeZone': 'Asia/Tokyo',
-    },
-    'end': {
-        'dateTime': '2021-07-28T17:00:00+09:00',
-        'timeZone': 'Asia/Tokyo',
-    },
-    }
-    event = service.events().insert(calendarId=calendar_id, body=event).execute()
+
+def createEvent(dicts, calendar_id):
+    for event_dict in dicts:
+        event = {
+            'summary': event_dict["subject"],
+            'start': {
+                'dateTime': event_dict["startDate"].isoformat(),
+                'timeZone': 'Asia/Tokyo',
+            },
+            'end': {
+                'dateTime': event_dict["endDate"].isoformat(),
+                'timeZone': 'Asia/Tokyo',
+            },
+        }
+        event = service.events().insert(calendarId=calendar_id, body=event).execute()
+
 
 if __name__ == '__main__':
-    #readEvent10(creds)
+    # readEvent10(creds)
     createEvent(getCalenderId())

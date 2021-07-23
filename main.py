@@ -1,4 +1,6 @@
 import csv
+from kivy.app import App
+from kivy.uix.button import Button
 
 from modules import shibo
 from modules import toGoogle
@@ -11,4 +13,9 @@ with open(inputPath, 'r') as f:
 c = shibo.ShiftContainer(dataString)
 event_dicts = c.dataDicts
 c.toGoogleCSV()
-toGoogle.setEvent(event_dicts)
+
+class ShiboApp(App):
+    pass
+
+ShiboApp().run()
+

@@ -1,4 +1,13 @@
-#:kivy 1.0
+#:kivy 1.1.0
 
-Label:
-    text:"hello"
+LoadCalendar:
+
+<LoadCalendar>:
+
+    BoxLayout:
+        size:root.size
+        TextInput:
+            text:''
+        Button:
+            text:"送信"
+            on_release: root.googleBotton()
